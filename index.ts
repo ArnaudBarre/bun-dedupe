@@ -7,7 +7,7 @@ const lockfilePath = join(process.cwd(), "bun.lock");
 const module = await import(lockfilePath);
 const lockfile: BunLockFile = module.default;
 
-const check = process.argv.includes("--check");
+const check = process.argv.includes("--check") || !!process.env["CI"];
 
 function pathToPackages(path: string): string[] {
   const packages: string[] = [];
@@ -56,7 +56,6 @@ for (const dependencyPath in lockfile.packages) {
       );
       const requestedVersion = info[2].dependencies[depName];
       if (semver.satisfies(previousLevelVersion, requestedVersion)) {
-        console.log(`${nestedName} can be hoisted`);
         hoistedPackages.push(nestedName);
       }
     }
