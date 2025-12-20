@@ -98,3 +98,5 @@ for (const line of lockfileLines) {
   }
 }
 writeFileSync(lockfilePath, newLockfileLines.join("\n"));
+
+console.log(`Duplicates removed: ${pathsToDrop.join(", ")}`);
