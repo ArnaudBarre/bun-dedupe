@@ -2,7 +2,7 @@
   "name": "bun-dedupe",
   "description": "Dedupe dependencies in bun.lock",
   "type": "module",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "author": "Arnaud Barré (https://github.com/ArnaudBarre)",
   "license": "MIT",
   "repository": "github:ArnaudBarre/bun-dedupe",
@@ -19,7 +19,7 @@
     "lockfile"
   ],
   "scripts": {
-    "check": "tsc && bun prettier && bun index.ts --check",
+    "check": "tsc && bun prettier && bun test && bun index.ts --check",
     "prettier": "prettier --check '**/*.{ts,json,md}'"
   },
   "prettier": {
