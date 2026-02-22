@@ -57,6 +57,16 @@ function printInfo(info: PackageInfo): string {
 
 /** Get all the requirements for each package */
 const requirements: Record<string, string[]> = {};
+for (const dependencyPath in lockfile.workspaces[""].dependencies) {
+  (requirements[dependencyPath] ??= []).push(
+    lockfile.workspaces[""].dependencies[dependencyPath],
+  );
+}
+for (const dependencyPath in lockfile.workspaces[""].devDependencies) {
+  (requirements[dependencyPath] ??= []).push(
+    lockfile.workspaces[""].devDependencies[dependencyPath],
+  );
+}
 for (const dependencyPath in lockfile.packages) {
   const info = lockfile.packages[dependencyPath];
   if (info.length !== 4) continue; // Only support npm

@@ -2,7 +2,7 @@
   "name": "bun-dedupe",
   "description": "Dedupe dependencies in bun.lock",
   "type": "module",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "author": "Arnaud Barré (https://github.com/ArnaudBarre)",
   "license": "MIT",
   "repository": "github:ArnaudBarre/bun-dedupe",
