@@ -1,0 +1,30 @@
+{
+  "lockfileVersion": 1,
+  "configVersion": 1,
+  "workspaces": {
+    "": {
+      "name": "monorepo",
+    },
+    "packages/backend": {
+      "name": "backend",
+      "dependencies": {
+        "nanoid": "^5.1.6",
+      },
+    },
+    "packages/frontend": {
+      "name": "frontend",
+      "devDependencies": {
+        "nanoid": "5.1.6",
+      },
+    },
+  },
+  "packages": {
+    "backend": ["backend@workspace:packages/backend"],
+
+    "frontend": ["frontend@workspace:packages/frontend"],
+
+    "nanoid": ["nanoid@5.1.7", "", { "bin": { "nanoid": "bin/nanoid.js" } }, "sha512-ua3NDgISf6jdwezAheMOk4mbE1LXjm1DfMUDMuJf4AqxLFK3ccGpgWizwa5YV7Yz9EpXwEaWoRXSb/BnV0t5dQ=="],
+
+    "frontend/nanoid": ["nanoid@5.1.6", "", { "bin": { "nanoid": "bin/nanoid.js" } }, "sha512-c7+7RQ+dMB5dPwwCp4ee1/iV/q2P6aK1mTZcfr1BTuVlyW9hJYiMPybJCcnBlQtuSmTIWNeazm/zqNoZSSElBg=="],
+  }
+}

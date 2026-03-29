@@ -2,8 +2,6 @@
 
 Dedupe dependencies in bun.lock.
 
-🚧 WIP 🚧 Not tested with workspaces.
-
 🗳️ Please vote for built-in support in Bun: https://github.com/oven-sh/bun/issues/1343
 
 ## Usage

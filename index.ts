@@ -1,7 +1,18 @@
 #!/usr/bin/env bun
-import { type BunLockFile, type BunLockFilePackageArray, semver } from "bun";
+import {
+  type BunLockFile,
+  type BunLockFilePackageArray,
+  type BunLockFileWorkspacePackage,
+  semver,
+} from "bun";
 import { readFileSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
+
+if (process.argv.includes("--version") || process.argv.includes("-v")) {
+  const pkg = await import("./package.json");
+  console.log(pkg.version);
+  process.exit(0);
+}
 
 const lockfilePath = join(process.cwd(), "bun.lock");
 const module = await import(lockfilePath);
@@ -53,6 +64,22 @@ function printInfo(info: PackageInfo): string {
     return JSON.stringify(info);
   }
 }
+
+function getDependencies(
+  info: BunLockFilePackageArray,
+): Record<string, string> | undefined {
+  if (info.length === 4) return info[2].dependencies; // npm
+  if (info.length === 1) {
+    const workspacePath = info[0].slice(info[0].indexOf("@workspace:") + 11);
+    const workspace: BunLockFileWorkspacePackage | undefined =
+      lockfile.workspaces[workspacePath];
+    if (workspace === undefined) {
+      throw new Error(`Unsupported workspace reference: ${info[0]}`);
+    }
+    return { ...workspace.devDependencies, ...workspace.dependencies };
+  }
+  return undefined; // Other types are not supported yet
+}
 /** ------------- Utils ------------- */
 
 /** Get all the requirements for each package */
@@ -69,10 +96,11 @@ for (const dependencyPath in lockfile.workspaces[""].devDependencies) {
 }
 for (const dependencyPath in lockfile.packages) {
   const info = lockfile.packages[dependencyPath];
-  if (info.length !== 4) continue; // Only support npm
+  const dependencies = getDependencies(info);
+  if (dependencies === undefined) continue;
   const packages = pathToPackages(dependencyPath);
-  for (const depName in info[2].dependencies) {
-    const requirement = info[2].dependencies[depName];
+  for (const depName in dependencies) {
+    const requirement = dependencies[depName];
     const pkg = searchInTree(packages, depName);
     (requirements[pkg] ??= []).push(requirement);
   }
@@ -102,14 +130,15 @@ for (const dependencyPath in lockfile.packages) {
     continue;
   }
   const info = lockfile.packages[dependencyPath];
-  if (info.length !== 4) continue; // Only support npm
-  for (const depName in info[2].dependencies) {
+  const dependencies = getDependencies(info);
+  if (dependencies === undefined) continue;
+  for (const depName in dependencies) {
     const nestedName = `${dependencyPath}/${depName}`;
     if (nestedName in lockfile.packages) {
       const previousLevelPath = searchInTree(packages.slice(0, -1), depName);
       const previousLevelInfo = lockfile.packages[previousLevelPath];
       const previousLevelVersion = getVersion(previousLevelInfo);
-      const requestedVersion = info[2].dependencies[depName];
+      const requestedVersion = dependencies[depName];
       if (semver.satisfies(previousLevelVersion, requestedVersion)) {
         hoistedPackages.push(nestedName);
       } else {
